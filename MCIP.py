@@ -34,7 +34,8 @@ def get_info(ip):
                 "max": 0,
                 "players": [],
                 "icon": ",iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAAXNSR0IArs4c6QAAAYhJREFUaIHtWcENwyAMTKtuxCiZM6MwU/qohBAxYIzhQPW9qmISrnfG4L7u+z52xhu9gF4YATSMABpGAA0jgMandcLlXPh8ep8LIIdGYHsFugjEaqDw3wqsgOYkTnA5J8jXp/fEST9bgcs5MnPE6SQnoPLD80dz6LXQwXZRoYCEIYEhuywkM+5zVk/V08kBYEFYZRuF7ULqZ55WMdUUQLloFQuJoUBg2smZhKYCEBetYqFAfmohCwC6SFkBjoueMT3eUzgL/XB6X15HHJCLFCg5NQfK65P5cHYSn96TCxVn0Wv3PziIHChYGVuzSKxSB8QoWWhyj02G7RXQqQNJ2hRE40TGyldbsb0KkG2SXOOktQYno2SwZiWOX5PrL8RfliOTDMwF6zR344cWVpOguj1UH3sMvdB09g+ZwWoWErxbBdtvo0YAjSE5IL7gCqCgAP96NaJtodOdjlfG3/JV+NTvA9XTCDlrUHF4QqG5y+z38yObsP2Vcvtt1AigYQTQMAJoGAE0jAAaX/K7u5hynbyBAAAAAElFTkSuQmCC",
-                "exists": False}
+                "exists": False,
+                "ping": 0}
     
     server = JavaServer.lookup(ip.strip())
     status = server.status()
@@ -46,7 +47,8 @@ def get_info(ip):
         "max": status.players.max,
         "players": status.players.sample,
         "icon": status.icon,
-        "exists": True
+        "exists": True,
+        "ping": status.latency
         }
 
     return server_status
@@ -70,6 +72,9 @@ def add_ip():
 
     for i in ips:
         servers.insert(END, i)
+
+def refresh_info():
+    get_selected_info(0)
         
 def get_selected_info(event):
     for i in servers.curselection():
@@ -89,6 +94,7 @@ def get_selected_info(event):
     text = server
     text += "\n\n" + motd + "\n"
     text += f"\n{info['online']}/{info['max']}"
+    text += "\n\nPing: " + str(round(info["ping"], 2)) + "ms\n"
 
     text += "\nOnline Players:\n\n"
 
@@ -145,6 +151,9 @@ new_ip.pack(anchor = N, fill = X)
 
 add_btn = Button(window, text = "Add IP", command = add_ip, font = ("Consolas", 20))
 add_btn.pack(anchor = N, fill = X)
+
+refresh_btn = Button(window, text = "Refresh", command = refresh_info, font = ("Consolas", 20))
+refresh_btn.pack(anchor = N, fill = X)
 
 server_icon.pack()
 server_ip.pack()
